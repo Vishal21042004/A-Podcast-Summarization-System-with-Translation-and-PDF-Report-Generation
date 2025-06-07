@@ -48,9 +48,10 @@ yarn-error.log*
 *.swp
 *.tmp
 
+
 # Ignore uploads and audios (if you don't want to track user files)
-uploads/
-audios/
+#uploads/
+#audios/
 
 # Ignore backend folder (if you want to exclude it from git)
 backend/
