@@ -1,0 +1,278 @@
+/* Root Styling */
+.dashboard {
+  background: linear-gradient(to right, rgb(5, 10, 15), rgb(5, 28, 51));
+  min-height: 100vh;
+  padding: 2rem;
+  font-family: 'Segoe UI', sans-serif;
+  color: #e1e8f0;
+}
+
+/* Title */
+.title {
+  text-align: center;
+  font-size: 2.8rem;
+  margin-bottom: 2rem;
+  color: #aad4ff;
+  font-weight: bold;
+}
+
+/* Form */
+.form {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.input {
+  width: 50%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #2e4a7d;
+  border-radius: 8px;
+  margin-right: 10px;
+  background: #102946;
+  color: #e1e8f0;
+  transition: border-color 0.3s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #aad4ff;
+}
+
+/* Buttons */
+.button {
+  background: #2e4a7d;
+  color: #e1e8f0;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.button:hover {
+  background: #4a6cb3;
+  transform: scale(1.05);
+}
+
+/* Error */
+.error {
+  color: #ff6b6b;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 1rem;
+}
+
+/* Video Section */
+.video-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.video-section .react-player {
+  border: 3px solid #2e4a7d;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(30, 144, 255, 0.3);
+  overflow: hidden;
+  max-width: 720px;
+  width: 90%;
+}
+
+/* Add margin between video and extract button */
+.video-section .button {
+  margin-top: 1.5rem;
+}
+
+/* Cards (Animated Glow) */
+@keyframes glowBorder {
+  0% {
+    border-color: #00c6ff;
+    box-shadow: 0 0 10px #00c6ff;
+  }
+  25% {
+    border-color: #007cf0;
+    box-shadow: 0 0 12px #007cf0;
+  }
+  50% {
+    border-color: #00f2fe;
+    box-shadow: 0 0 14px #00f2fe;
+  }
+  75% {
+    border-color: #007cf0;
+    box-shadow: 0 0 12px #007cf0;
+  }
+  100% {
+    border-color: #00c6ff;
+    box-shadow: 0 0 10px #00c6ff;
+  }
+}
+
+.card,
+.box {
+  background: rgba(255, 255, 255, 0.02);
+  border: 2px solid #00c6ff;
+  animation: glowBorder 4s ease-in-out infinite;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  color: #dbefff;
+  transition: transform 0.3s ease;
+}
+
+.card:hover,
+.box:hover {
+  transform: scale(1.01);
+}
+
+/* Text areas */
+.text-box {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 1rem;
+  border-radius: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  margin-top: 0.5rem;
+  color: #e0f0ff;
+}
+
+/* Actions */
+.actions {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Select Dropdown */
+select {
+  background: #1f3a60;
+  border: 1px solid #3c5a88;
+  color: #d9e6ff;
+  padding: 0.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+select:focus,
+select:hover {
+  border-color: #aad4ff;
+  outline: none;
+}
+
+/* Summary Section */
+.summary-section {
+  margin-top: 2rem;
+}
+
+/* Download Button - Transparent */
+.download-button {
+  background: transparent;
+  color: #1e90ff;
+  padding: 0.75rem 2rem;
+  border: 2px solid #1e90ff;
+  border-radius: 8px;
+  font-weight: bold;
+  margin-top: 1rem;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(30, 144, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.download-button:hover {
+  background: rgba(30, 144, 255, 0.1);
+  transform: scale(1.05);
+  color: #aad4ff;
+  border-color: #aad4ff;
+}
+
+/* Scrollbars */
+.text-box::-webkit-scrollbar {
+  width: 6px;
+}
+.text-box::-webkit-scrollbar-thumb {
+  background-color: #4a6cb3;
+  border-radius: 10px;
+}
+
+/* Optional Glass Border Accent */
+.glass-border {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Chatbot Container */
+.chatbot-container {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 320px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  max-height: 60vh;
+}
+
+.chatbot-header {
+  background: #2d3a4a;
+  color: #fff;
+  padding: 10px;
+  border-radius: 12px 12px 0 0;
+  font-weight: bold;
+  text-align: center;
+}
+
+.chatbot-history {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  background: #f9f9f9;
+}
+
+.chatbot-msg {
+  margin-bottom: 8px;
+  font-size: 0.95em;
+}
+
+.chatbot-msg.user {
+  text-align: right;
+  color: #2d3a4a;
+}
+
+.chatbot-msg.bot {
+  text-align: left;
+  color: #1a7f37;
+}
+
+.chatbot-form {
+  display: flex;
+  border-top: 1px solid #eee;
+  padding: 8px;
+  background: #fafafa;
+}
+
+.chatbot-form input {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-right: 6px;
+}
+
+.chatbot-form button {
+  padding: 6px 16px;
+  background: #2d3a4a;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}

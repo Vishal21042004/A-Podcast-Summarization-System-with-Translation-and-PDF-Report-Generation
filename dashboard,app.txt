@@ -1,0 +1,297 @@
+from flask import Flask, request, jsonify, send_from_directory
+from moviepy.editor import VideoFileClip
+import os
+import uuid
+import yt_dlp
+import whisper
+from flask_cors import CORS
+import time
+
+app = Flask(__name__)
+CORS(app)
+
+# Folder setup
+UPLOAD_FOLDER = 'uploads'
+AUDIO_FOLDER = 'audios'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(AUDIO_FOLDER, exist_ok=True)
+
+# Load Whisper model
+model = whisper.load_model("base")
+
+def generate_filename(extension):
+    return f"{uuid.uuid4().hex}.{extension}"
+
+def transcribe_audio(audio_path):
+    """Transcribe audio using Whisper"""
+    try:
+        if not os.path.exists(audio_path):
+            raise FileNotFoundError(f"File not found: {audio_path}")
+        result = model.transcribe(audio_path)
+        return result["text"]
+    except Exception as e:
+        return f"Transcription failed: {str(e)}"
+
+@app.route('/extract-audio', methods=['POST'])
+def extract_audio():
+    """Upload a video file, extract audio and transcribe"""
+    if 'video' not in request.files:
+        return jsonify({"success": False, "message": "No video file provided"}), 400
+
+    video = request.files['video']
+    filename = generate_filename('mp4')
+    video_path = os.path.join(UPLOAD_FOLDER, filename)
+    video.save(video_path)
+
+    try:
+        audio_filename = f"{os.path.splitext(filename)[0]}.wav"
+        audio_path = os.path.join(AUDIO_FOLDER, audio_filename)
+
+        clip = VideoFileClip(video_path)
+        clip.audio.write_audiofile(audio_path)
+        clip.close()
+
+        time.sleep(1)
+        transcription = transcribe_audio(audio_path)
+
+        return jsonify({
+            "success": True,
+            "audio_url": f"/audios/{audio_filename}",
+            "transcription": transcription
+        })
+
+    except Exception as e:
+        return jsonify({"success": False, "message": f"Error: {str(e)}"}), 500
+    finally:
+        if os.path.exists(video_path):
+            try:
+                os.remove(video_path)
+            except PermissionError:
+                print(f"Warning: Could not delete {video_path}")
+
+@app.route('/extract-audio-from-link', methods=['POST'])
+def extract_audio_from_link():
+    """Download video from link, extract audio and transcribe"""
+    data = request.get_json()
+    video_url = data.get('videoUrl')
+
+    if not video_url:
+        return jsonify({"success": False, "message": "No video URL provided"}), 400
+
+    temp_video = generate_filename('mp4')
+    video_path = os.path.join(UPLOAD_FOLDER, temp_video)
+
+    try:
+        ydl_opts = {
+            'format': 'best[ext=mp4]/best',
+            'outtmpl': video_path,
+            'quiet': True,
+        }
+
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([video_url])
+
+        audio_filename = f"{os.path.splitext(temp_video)[0]}.wav"
+        audio_path = os.path.join(AUDIO_FOLDER, audio_filename)
+
+        clip = VideoFileClip(video_path)
+        clip.audio.write_audiofile(audio_path)
+        clip.close()
+
+        time.sleep(1)
+        transcription = transcribe_audio(audio_path)
+
+        return jsonify({
+            "success": True,
+            "audio_url": f"/audios/{audio_filename}",
+            "transcription": transcription
+        })
+
+    except Exception as e:
+        return jsonify({"success": False, "message": f"Error: {str(e)}"}), 500
+    finally:
+        if os.path.exists(video_path):
+            try:
+                os.remove(video_path)
+            except PermissionError:
+                print(f"Warning: Could not delete {video_path}")
+
+@app.route('/summarize-video', methods=['POST'])
+def summarize_video():
+    """Download video from link, extract audio, transcribe and summarize"""
+    data = request.get_json()
+    video_url = data.get('videoUrl')
+
+    if not video_url:
+        return jsonify({"success": False, "message": "No video URL provided"}), 400
+
+    temp_video = generate_filename('mp4')
+    video_path = os.path.join(UPLOAD_FOLDER, temp_video)
+
+    try:
+        ydl_opts = {
+            'format': 'best[ext=mp4]/best',
+            'outtmpl': video_path,
+            'quiet': True,
+        }
+
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([video_url])
+
+        audio_filename = f"{os.path.splitext(temp_video)[0]}.wav"
+        audio_path = os.path.join(AUDIO_FOLDER, audio_filename)
+
+        clip = VideoFileClip(video_path)
+        clip.audio.write_audiofile(audio_path)
+        clip.close()
+
+        time.sleep(1)
+        transcription = transcribe_audio(audio_path)
+
+        # Simple placeholder summarization logic
+        summary = f"Summary: {transcription[:100]}..."
+
+        return jsonify({
+            "success": True,
+            "summary": summary,
+            "transcription": transcription
+        })
+
+    except Exception as e:
+        return jsonify({"success": False, "message": f"Error: {str(e)}"}), 500
+    finally:
+        if os.path.exists(video_path):
+            try:
+                os.remove(video_path)
+            except PermissionError:
+                print(f"Warning: Could not delete {video_path}")
+
+@app.route('/audios/<path:filename>')
+def serve_audio(filename):
+    """Serve audio files"""
+    return send_from_directory(AUDIO_FOLDER, filename)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5002, debug=True)
+
+
+
+
+
+APP.PY
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useState } from 'react';
+import axios from 'axios';
+
+export default function Dashboard() {
+  const [videoLink, setVideoLink] = useState('');
+  const [summaryText, setSummaryText] = useState('');
+  const [transcription, setTranscription] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleSummarize = async () => {
+    if (!videoLink) {
+      setErrorMsg('Please provide a video link.');
+      return;
+    }
+
+    setLoading(true);
+    setSummaryText('');
+    setTranscription('');
+    setErrorMsg('');
+
+    try {
+      const res = await axios.post('http://localhost:5002/summarize-video', {
+        videoUrl: videoLink, // Send video link without the summary ratio
+      });
+
+      if (res.data.success) {
+        setSummaryText(res.data.summary);
+        setTranscription(res.data.transcription);
+      } else {
+        setErrorMsg(`Summarization failed: ${res.data.message}`);
+      }
+    } catch (err) {
+      console.error('Summarization error:', err);
+      setErrorMsg('Summarization failed. Please try again.');
+    }
+
+    setLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-2xl bg-gray-800 p-8 rounded-2xl shadow-xl space-y-8">
+        <h2 className="text-3xl font-bold text-center">Video Summarization</h2>
+
+        <div className="space-y-4">
+          <input
+            type="text"
+            placeholder="Enter video link (e.g., YouTube URL)"
+            value={videoLink}
+            onChange={(e) => setVideoLink(e.target.value)}
+            className="w-full p-3 rounded-lg bg-gray-700 text-white placeholder-gray-400"
+          />
+
+          <button
+            onClick={handleSummarize}
+            className="w-full bg-green-600 hover:bg-green-700 py-3 rounded-lg font-semibold"
+            disabled={loading}
+          >
+            {loading ? 'Summarizing...' : 'Summarize Video'}
+          </button>
+
+          {errorMsg && <div className="text-red-500 text-sm">{errorMsg}</div>}
+
+          {summaryText && (
+            <div className="bg-gray-800 border border-purple-600 rounded-lg p-4 mt-4">
+              <h3 className="text-lg font-semibold mb-2">🧾 Summary</h3>
+              <p className="text-gray-200 whitespace-pre-line">{summaryText}</p>
+            </div>
+          )}
+
+          {transcription && (
+            <div className="bg-gray-800 border border-purple-600 rounded-lg p-4 mt-4">
+              <h3 className="text-lg font-semibold mb-2">🎤 Transcription</h3>
+              <p className="text-gray-200 whitespace-pre-line">{transcription}</p>
+            </div>
+          )}
+
+          {/* Video Preview */}
+          {videoLink && (
+            <div className="bg-gray-800 border border-purple-600 rounded-lg p-4 mt-4">
+              <h3 className="text-lg font-semibold mb-2">🎬 Video Preview</h3>
+              <video controls className="w-full rounded-lg">
+                <source src={videoLink} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+
+
+
+
+
+
+dashboard.py

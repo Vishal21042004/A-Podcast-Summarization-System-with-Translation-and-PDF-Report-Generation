@@ -1,0 +1,8 @@
+Flask
+flask-cors
+moviepy
+yt_dlp
+pytube
+whisper
+torch
+sentencepiece
